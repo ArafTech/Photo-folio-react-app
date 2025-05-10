@@ -1,12 +1,14 @@
+// filepath: c:\Users\Arafath\OneDrive\Desktop\Coding\React\photo-folio\src\App.jsx
 import React from "react";
+import NavBar from "./components/NavBar/NavBar";
+import AlbumList from "./components/AlbumList/AlbumList";
 
 function App() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-500">
-        ArafTech Photofolio App
-      </h1>
-    </div>
+    <React.Fragment>
+      <NavBar />
+      <AlbumList />
+    </React.Fragment>
   );
 }
 
