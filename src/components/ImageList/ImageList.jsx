@@ -15,6 +15,16 @@ import {
   onSnapshot,
   deleteDoc,
 } from "firebase/firestore";
+
+const isValidUrl = (url) => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const ImageList = ({ albumId, onBackClick }) => {
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
@@ -28,6 +38,10 @@ const ImageList = ({ albumId, onBackClick }) => {
   };
 
   const handleAddImage = async () => {
+    if (!isValidUrl(imageUrl)) {
+      toast.error("Invalid Image URL");
+      return;
+    }
     try {
       if (editImageId) {
         await setDoc(doc(db, "images", editImageId), {

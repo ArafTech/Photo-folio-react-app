@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./AlbumList.module.css";
+import styles from "./AlbumLists.module.css";
 import AlbumForm from "../AlbumForm/AlbumForm";
 import { db } from "../../config/firebase";
 import ImageList from "../ImageList/ImageList";
@@ -18,33 +18,30 @@ const AlbumLists = () => {
   const [selectedAlbumId, setSelectedAlbumId] = useState(null);
 
   const fetchAlbums = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "albums"));
-      const albumData = [];
-      querySnapshot.forEach((doc) => {
-        albumData.push({ id: doc.id, ...doc.data() }); // Ensure imageUrl is included
-      });
-      setAlbums(albumData);
-    } catch (error) {
-      console.error("Error fetching albums: ", error);
-    }
+    const querySnapshot = await getDocs(collection(db, "albums"));
+    const albumData = [];
+    querySnapshot.forEach((doc) => {
+      albumData.push({ id: doc.id, name: doc.data().name });
+    });
+    setAlbums(albumData);
   };
-
   useEffect(() => {
     fetchAlbums();
   }, []);
 
-  const handleToggleForm = () => {
-    setShowForm((prevState) => !prevState);
+  const handleAddedAlbum = () => {
+    setShowForm((previousForm) => !previousForm);
   };
 
-  const handleAlbumCreate = async (album) => {
+  const handleAlbumCreate = async (name) => {
     try {
-      await addDoc(collection(db, "albums"), album);
+      await addDoc(collection(db, "albums"), {
+        name: name,
+      });
       fetchAlbums();
       setShowForm(false);
     } catch (error) {
-      console.error("Error in creating Albums: ", error);
+      console.log("Error in creating ALbums: ", error);
     }
   };
 
@@ -67,12 +64,10 @@ const AlbumLists = () => {
     <>
       {!selectedAlbumId && (
         <div className={styles.main}>
-          <h2>Your Albums</h2>
+          <h2>Your albums</h2>
           <button
-            className={`${styles.addButton} ${
-              showForm ? styles.cancelButton : ""
-            }`}
-            onClick={handleToggleForm}
+            className={`${showForm ? "cancel" : ""}`}
+            onClick={handleAddedAlbum}
           >
             {showForm ? "Cancel" : "Add Album"}
           </button>
@@ -82,14 +77,14 @@ const AlbumLists = () => {
       {!selectedAlbumId && albums.length > 0 && (
         <div className={styles.lists}>
           {albums.map((album) => (
-            <div key={album.id} className={styles.albumItem}>
+            <div key={album.id}>
               <CiCircleRemove
                 size={20}
                 className={styles.delete}
                 onClick={() => handleAlbumRemove(album.id)}
               />
               <img
-                src={album.imageUrl || "https://via.placeholder.com/150"} // Default image
+                src={albumimg}
                 alt="album"
                 className={styles.icon}
                 onClick={() => handleAlbumClick(album.id)}

@@ -1,63 +1,59 @@
 import React, { useState } from "react";
 import styles from "./AlbumForm.module.css";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const AlbumForm = ({ onAlbumCreate, fetchAlbums, setShowForm }) => {
+const AlbumForm = ({ onAlbumCreate }) => {
+  //state for storing album name
   const [albumName, setAlbumName] = useState("");
-  const [albumImage, setAlbumImage] = useState("");
 
+  // event handler for input change
   const handleInputChange = (e) => {
     setAlbumName(e.target.value);
   };
 
-  const handleImageChange = (e) => {
-    setAlbumImage(e.target.value);
-  };
-
-  const handleAlbumCreate = async (album) => {
-    try {
-      if (!album.name || !album.imageUrl) {
-        console.error("Album name or image URL is missing.");
-        return;
-      }
-      await addDoc(collection(db, "albums"), album);
-      fetchAlbums(); // Refresh the album list after adding
-      setShowForm(false);
-    } catch (error) {
-      console.error("Error in creating Albums: ", error);
+  // event handler for creating an album
+  const handleCreateAlbum = () => {
+    // if album name is empty then show error
+    if (albumName.trim() === "") {
+      toast.error("Please Enter an Album name!!");
+    } else {
+      // else call the function and pass the parent components
+      onAlbumCreate(albumName);
+      //show successfully created on toast
+      toast.success("Album Created Successfully");
+      //after creating clear the input field
+      handleClear();
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const album = { name: albumName, imageUrl: albumImage };
-    handleAlbumCreate(album);
+  // event handler for clear the input field
+  const handleClear = () => {
     setAlbumName("");
-    setAlbumImage("");
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      <h1>Create Album</h1>
-      <input
-        type="text"
-        value={albumName}
-        onChange={handleInputChange}
-        placeholder="Enter album name"
-        required
-        autoFocus
-      />
-      <input
-        type="text"
-        value={albumImage}
-        onChange={handleImageChange}
-        placeholder="Enter album image URL"
-        required
-      />
-      <button type="submit">Add Album</button>
-    </form>
+    <>
+      <div className={styles.form}>
+        <h1>Create album</h1>
+        <div>
+          <input
+            type="text"
+            placeholder="Enter an Album name..."
+            value={albumName}
+            onChange={handleInputChange}
+            autoFocus
+          />
+          <button className="clear" onClick={handleClear}>
+            Clear
+          </button>
+          <button className="create" onClick={handleCreateAlbum}>
+            Create
+          </button>
+        </div>
+      </div>
+      <ToastContainer />
+    </>
   );
 };
-
 export default AlbumForm;

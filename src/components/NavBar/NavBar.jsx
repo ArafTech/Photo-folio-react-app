@@ -1,6 +1,5 @@
 import React from "react";
 import logo from "./logo.png";
-// import PropTypes from "prop-types";
 import styles from "./NavBar.module.css";
 
 const NavBar = () => (
@@ -10,8 +9,5 @@ const NavBar = () => (
   </div>
 );
 
-// NavBar.propTypes = {};
-
-// NavBar.defaultProps = {};
 
 export default NavBar;
